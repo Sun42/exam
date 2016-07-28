@@ -1,0 +1,150 @@
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <stdlib.h>
+
+#define BUF 4096
+
+int	size_lines(char buf[], int max);
+int	count_nblines(char buf[], int max);
+char	**mk_tab(char buf[], int taillel, int nbl);
+void	my_strncpy(char *str1, char *str2, int max);
+void	aff_tab(char **tab);
+void	my_putstr(char *str);
+int	my_strlen(char *str);
+
+
+void	count_island(char *filename)
+{
+  int		fd;
+  int		sizeline;
+  int		nbline;
+  char		buf[BUF];
+  struct stat	st;
+  char		**tab;
+  
+ if ((fd = open(filename, O_RDONLY)) == -1)
+    return ;
+
+ if (fstat(fd, &st) == -1)
+   return ;
+  if (read(fd, buf, st.st_size) == -1)
+    return ;
+
+
+  sizeline = size_lines(buf, st.st_size);
+  nbline = count_nblines(buf, st.st_size);
+  printf("taille dune ligne :%i \n", sizeline);
+  printf("Nombre de lignes :%i \n", nbline);
+  tab = mk_tab(buf, sizeline, nbline);
+  
+  close(fd);
+}
+
+char	**mk_tab(char buf[], int taillel, int nbl)
+{
+  char	**tab;
+  int	i;
+
+  i = 0;
+  tab = malloc(sizeof(*tab) * (nbl + 1));
+  tab[nbl] = 0;
+  while (i < nbl)
+    {
+      tab[i] = malloc(sizeof(**tab) * taillel);
+      my_strncpy(tab[i], buf, taillel - 1);
+      i++;
+      buf += taillel;
+    }
+  return (tab);
+}
+
+void	my_strncpy(char *str1, char *str2, int max)
+{
+  int	i;
+
+  i = 0;
+  while (i < max)
+    {
+      str1[i] = buf[i];
+      i++;
+    }
+  str1[i] = '\0';
+}
+
+
+void	aff_tab(char **tab)
+{
+  int	i;
+
+  i = 0;
+  while (tab[i] != 0)
+    {
+      my_putstr(tab[i]);
+      my_putstr("\n");
+      i++;
+    }
+
+}
+
+
+int	count_nblines(char buf[], int max)
+{
+  int	i;
+  int	cpt;
+
+  cpt = 0;
+  i = 0;
+  while ((buf[i] != '\0') && (i <= max))
+    {
+      if (buf[i] == '\n')
+	cpt++;
+      i++;
+    }
+  return (cpt);
+}
+
+int	size_lines(char buf[], int max)
+{
+  int	i;
+
+  i = 0;
+  while ((buf[i] != '\0') && (i <= max))
+    {
+      if (buf[i] == '\n')
+	break ;
+      i++;
+    }
+  return (i);
+}
+
+
+int	main(int ac, char **av)
+{
+  if (ac == 2)
+    {
+      count_island(av[1]);
+    }
+}
+
+
+void	my_putstr(char *str)
+{
+  write(1, str, my_strlen(str));
+}
+
+int	my_strlen(char *str)
+{
+  int	i;
+
+  i = 0;
+  while (str[i] != '\0')
+    {
+      i++;
+    }
+  return (i);
+}

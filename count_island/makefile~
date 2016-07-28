@@ -1,0 +1,3 @@
+NAME = count_islands
+CC = gcc
+SRC = count_islands.c
